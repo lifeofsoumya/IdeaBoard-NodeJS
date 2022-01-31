@@ -48,8 +48,8 @@ router.post("/signup", (req,res) =>{
 //else hash the password using bcrypt and save in db, redirect to login    
     else{
 
-        var salt = bcrypt.genSalt(12);
-        var hash = bcrypt.hash(password, salt);
+        var salt = await bcrypt.genSalt(12);
+        var hash = await bcrypt.hash(password, salt);
 
         users({
             email:email, 
