@@ -5,6 +5,8 @@ const router = require('./controller/routes');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
+const passport = require('passport');
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -32,8 +34,17 @@ app.use(expressSession({
 }));
 
 
-app.use(router);
 app.use(csrf());
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(flash());
+
+app.use((req, res, next)=>{
+    res.locals.error = req.flash('error');
+    next();
+})
+app.use(router);
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=> console.log("started server at 3000"))
