@@ -2,6 +2,7 @@ const express = require('express');
 const users = require('../model/user.js');
 const router = express.Router();
 var bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 router.get("/", (req, res) => {
     res.render("index");
@@ -32,7 +33,7 @@ router.post("/signup", (req,res) =>{
 }
 //checks if diff person is having that email or username
     else{
-        var userData = await users.findOne({ 
+        var userData = users.findOne({ 
             $or : [ { email : email}, {username: username}] })
     };
 
@@ -48,8 +49,8 @@ router.post("/signup", (req,res) =>{
 //else hash the password using bcrypt and save in db, redirect to login    
     else{
 
-        var salt = await bcrypt.genSalt(12);
-        var hash = await bcrypt.hash(password, salt);
+        var salt = bcrypt.genSalt(12);
+        var hash = bcrypt.hash(password, salt);
 
         users({
             email:email, 
@@ -62,7 +63,13 @@ router.post("/signup", (req,res) =>{
 });
 
 
-
+router.post('/login', (req, res) =>{
+    passport.authenticate('local',{
+        failureRedirect : '/login',
+        successRedirect : '/signup',
+        failureFlash : true,
+    })(req, res, next);
+})
 
 
 module.exports = router;
